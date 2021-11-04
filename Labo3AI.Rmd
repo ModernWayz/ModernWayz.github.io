@@ -1,0 +1,170 @@
+---
+title: "Labo 3: Data & variabelen"
+author: "Jouw naam hier"
+date: "2021-10-28"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+---
+```{r}
+library(AER)
+library(magrittr)
+library(data.table)
+library(knitr)
+library(reticulate)
+library(datasets)
+library(MASS)
+library(glmnet)
+library(mice)
+library(tidyr)
+library(ggplot2)
+library(Hmisc)
+
+set.seed(42)
+
+opts_chunk$set(echo = TRUE)
+
+```
+
+```{r}
+data(cars)
+cars <- setDT(cars)
+print(cars, topn=5)
+
+hist(cars$speed, main="speed", xlab="speed")
+
+plot(cars$speed, cars$dist,xlab="speed", ylab="distance")
+
+str(cars)
+
+cars$speed <- as.integer(cars$speed)
+cars$dist <- as.integer(cars$dist)
+
+str(cars)
+
+summary(cars)
+
+hist(cars$dist, main="distance", xlab="distance")
+
+```
+
+# Boston data
+from 1980 and 1978 not so recent
+all variables could be used since there is no research question
+one row stands for a single lot/house with all its assets listed and finally a median value is assigned
+
+
+### crim
+
+per capita crime rate by town.
+
+type: numerical continuous linear
+
+No missing data
+
+No privacy issues
+
+### zn
+
+proportion of residential land zoned for lots over 25,000 sq.ft.
+
+
+
+### indus
+
+proportion of non-retail business acres per town.
+
+### chas
+
+Charles River dummy variable (= 1 if tract bounds river; 0 otherwise).
+
+### nox
+
+nitrogen oxides concentration (parts per 10 million).
+
+### rm
+
+average number of rooms per dwelling.
+
+### age
+
+proportion of owner-occupied units built prior to 1940.
+
+### dis
+
+weighted mean of distances to five Boston employment centres.
+
+### rad
+
+index of accessibility to radial highways.
+
+
+### tax
+
+full-value property-tax rate per \$10,000.
+
+### ptratio
+
+pupil-teacher ratio by town.
+
+numerical discrete linear
+
+### black
+
+1000(Bk - 0.63)^2 where Bk is the proportion of blacks by town.
+
+ethical problem as this might produce a one sided model
+
+### lstat
+
+lower status of the population (percent).
+
+unclear what status indicates and also one sided models might form
+
+### medv
+
+median value of owner-occupied homes in \$1000s.
+
+# fake question: How did the size of school classes influence the value of suburban houses in Boston between 1986 and 1980 ?
+
+Drop all data except medv (value) and ptratio
+
+
+```{r}
+
+data(Boston)
+
+
+Boston <- Boston[, c("medv", "ptratio")] %>% setDT
+
+
+
+print(Boston, topn=5)
+
+str(Boston)
+
+
+
+Boston$ptratio <- as.integer(Boston$ptratio)
+
+hist.data.frame(Boston)
+
+summary(Boston)
+
+reg1 <- lm(medv~ptratio,data=Boston) 
+	summary(reg1)
+	
+	with(Boston,plot(medv, ptratio, xlab="median value", ylab="pupils per teacher"))
+	abline(reg1, col="blue")
+
+
+```
+
+# Conclusion
+
+set to integer because decimal values have no meaning in a pupil to teacher ratio variable
+
+on the plot we can see a weak correlation between pupils per teacher and median value.
+
+A high amount of pupils per teacher signifies a lower median value whereas a low amount of pupils per teacher signifies a higher median value
